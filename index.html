@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>COS TESLA LLC · 3D Airplane Flyover &amp; Colorado Springs Uber Map (11.08.26)</title>
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.1.0/dist/maplibre-gl.css" />
   <script src="https://unpkg.com/maplibre-gl@5.1.0/dist/maplibre-gl.js"></script>
   <style>
     :root {
       --bg-panel: rgba(10, 15, 27, 0.96);
-      --bg-card: rgba(20, 29, 48, 0.9);
-      --bg-card-hover: rgba(32, 46, 74, 0.97);
-      --border-subtle: rgba(148, 163, 184, 0.18);
-      --border-bright: rgba(56, 189, 248, 0.7);
+      --bg-card: rgba(20, 29, 48, 0.92);
+      --bg-card-hover: rgba(32, 46, 74, 0.98);
+      --border-subtle: rgba(148, 163, 184, 0.2);
+      --border-bright: rgba(56, 189, 248, 0.78);
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
     }
@@ -21,6 +21,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     html, body {
@@ -34,29 +35,33 @@
 
     #app {
       display: grid;
-      grid-template-columns: 365px 1fr;
-      grid-template-rows: 64px 1fr;
+      grid-template-columns: 350px 1fr;
+      grid-template-rows: 58px 1fr;
       width: 100vw;
       height: 100vh;
+      height: 100dvh;
+      position: relative;
     }
 
-    /* Top Header */
+    /* =====================================================================
+       TOP HEADER BAR
+       ===================================================================== */
     header#topbar {
       grid-column: 1 / -1;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px;
+      padding: 0 14px;
       background: rgba(8, 12, 22, 0.98);
       border-bottom: 1px solid var(--border-subtle);
-      z-index: 60;
+      z-index: 70;
       gap: 10px;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 11px;
+      gap: 10px;
       min-width: 0;
     }
 
@@ -64,22 +69,29 @@
       background: linear-gradient(135deg, #0ea5e9, #2563eb);
       color: #fff;
       font-weight: 800;
-      font-size: 11.5px;
+      font-size: 11px;
       letter-spacing: 0.06em;
-      padding: 6px 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 12px rgba(14, 165, 233, 0.4);
+      padding: 5px 9px;
+      border-radius: 7px;
+      box-shadow: 0 2px 10px rgba(14, 165, 233, 0.35);
       white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      min-width: 0;
     }
 
     .brand-title h1 {
-      font-size: 14.5px;
+      font-size: 14px;
       font-weight: 700;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .brand-title p {
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--text-secondary);
       white-space: nowrap;
     }
@@ -87,7 +99,8 @@
     .kpis {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 14px;
+      flex-shrink: 0;
     }
 
     .kpi {
@@ -97,7 +110,7 @@
     }
 
     .kpi .val {
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 800;
       color: #f8fafc;
     }
@@ -105,7 +118,7 @@
     .kpi .val.cyan { color: #38bdf8; }
 
     .kpi .lbl {
-      font-size: 9.5px;
+      font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--text-secondary);
@@ -118,21 +131,32 @@
       flex-wrap: nowrap;
     }
 
+    .transport-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      padding: 2px;
+      border-radius: 9px;
+    }
+
     .mode-pill-group {
       display: inline-flex;
       background: rgba(15, 23, 42, 0.95);
       border: 1px solid rgba(148, 163, 184, 0.28);
       border-radius: 9px;
       padding: 2px;
+      flex-shrink: 0;
     }
 
     .mode-pill {
       background: transparent;
       color: #94a3b8;
       border: none;
-      padding: 5px 10px;
+      padding: 5px 9px;
       border-radius: 7px;
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -146,19 +170,21 @@
     }
 
     .btn {
-      background: rgba(30, 41, 59, 0.9);
+      background: rgba(30, 41, 59, 0.92);
       color: #e2e8f0;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      border-radius: 8px;
-      padding: 6.5px 11px;
-      font-size: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.26);
+      border-radius: 7px;
+      padding: 6px 10px;
+      font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.15s ease;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      justify-content: center;
+      gap: 4px;
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .btn:hover {
@@ -166,54 +192,78 @@
       border-color: rgba(148, 163, 184, 0.45);
     }
 
+    .btn.icon-only {
+      padding: 5px 8px;
+      font-size: 12px;
+      border: none;
+      background: transparent;
+    }
+    .btn.icon-only:hover {
+      background: rgba(51, 65, 85, 0.85);
+    }
+
     .btn.primary {
       background: linear-gradient(135deg, #10b981, #059669);
       border-color: #10b981;
       color: #fff;
       font-weight: 700;
-      box-shadow: 0 2px 12px rgba(16, 185, 129, 0.35);
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35);
     }
 
     .btn.primary.playing {
       background: linear-gradient(135deg, #ef4444, #dc2626);
       border-color: #ef4444;
-      box-shadow: 0 2px 12px rgba(239, 68, 68, 0.4);
+      box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn.paused-state {
+      background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+      border-color: #f59e0b !important;
+      color: #111827 !important;
+      font-weight: 800;
     }
 
     .btn.active {
-      background: rgba(14, 165, 233, 0.22);
+      background: rgba(14, 165, 233, 0.24);
       border-color: #38bdf8;
       color: #7dd3fc;
     }
 
     select.ctrl-select {
-      background: rgba(30, 41, 59, 0.9);
+      background: rgba(30, 41, 59, 0.92);
       color: #e2e8f0;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      border-radius: 8px;
-      padding: 6px 8px;
-      font-size: 11.5px;
+      border: 1px solid rgba(148, 163, 184, 0.26);
+      border-radius: 7px;
+      padding: 5px 7px;
+      font-size: 11px;
       font-weight: 600;
       cursor: pointer;
       outline: none;
+      flex-shrink: 0;
     }
 
-    /* Left Sidebar */
+    /* =====================================================================
+       LEFT SIDEBAR (COLLAPSIBLE BOTTOM DRAWER ON MOBILE)
+       ===================================================================== */
     aside#sidebar {
       background: var(--bg-panel);
       border-right: 1px solid var(--border-subtle);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      z-index: 40;
+      z-index: 60;
+    }
+
+    .drawer-pull-bar {
+      display: none;
     }
 
     .sidebar-header {
-      padding: 11px 14px 9px;
+      padding: 10px 12px 8px;
       border-bottom: 1px solid var(--border-subtle);
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 6px;
     }
 
     .sidebar-header-top {
@@ -223,7 +273,7 @@
     }
 
     .sidebar-header-top h2 {
-      font-size: 12px;
+      font-size: 11.5px;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: #cbd5e1;
@@ -232,8 +282,8 @@
     .legend {
       display: flex;
       align-items: center;
-      gap: 9px;
-      font-size: 11px;
+      gap: 8px;
+      font-size: 10.5px;
       color: var(--text-secondary);
       flex-wrap: wrap;
     }
@@ -245,8 +295,8 @@
     }
 
     .dot {
-      width: 10px;
-      height: 10px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       display: inline-block;
       border: 1.5px solid #fff;
@@ -258,13 +308,13 @@
     .trip-list {
       flex: 1;
       overflow-y: auto;
-      padding: 10px;
+      padding: 9px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 7px;
     }
 
-    .trip-list::-webkit-scrollbar { width: 6px; }
+    .trip-list::-webkit-scrollbar { width: 5px; }
     .trip-list::-webkit-scrollbar-thumb {
       background: rgba(148, 163, 184, 0.28);
       border-radius: 3px;
@@ -274,62 +324,61 @@
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
       border-left: 4px solid var(--trip-color, #3b82f6);
-      border-radius: 10px;
-      padding: 9px 11px;
+      border-radius: 9px;
+      padding: 8px 10px;
       cursor: pointer;
-      transition: all 0.16s ease;
+      transition: all 0.15s ease;
     }
 
     .trip-card:hover {
       background: var(--bg-card-hover);
-      transform: translateX(2px);
       border-color: rgba(148, 163, 184, 0.42);
     }
 
     .trip-card.selected {
       background: rgba(26, 44, 78, 0.96);
       border-color: var(--border-bright);
-      box-shadow: 0 4px 16px rgba(14, 165, 233, 0.22);
+      box-shadow: 0 4px 14px rgba(14, 165, 233, 0.22);
     }
 
     .tc-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
 
     .tc-badges {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .tc-num {
       font-weight: 800;
-      font-size: 11.5px;
-      padding: 2px 6.5px;
-      border-radius: 5px;
+      font-size: 11px;
+      padding: 1.5px 6px;
+      border-radius: 4px;
       color: #fff;
       background: var(--trip-color, #3b82f6);
     }
 
     .tc-service {
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 600;
       color: #cbd5e1;
       background: rgba(255, 255, 255, 0.08);
-      padding: 2px 6px;
+      padding: 1.5px 5px;
       border-radius: 4px;
     }
 
     .tc-time {
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--text-secondary);
     }
 
     .tc-earn {
-      font-size: 14.5px;
+      font-size: 14px;
       font-weight: 800;
       color: #34d399;
     }
@@ -337,23 +386,23 @@
     .tc-stops {
       display: flex;
       flex-direction: column;
-      gap: 3.5px;
-      margin: 5px 0 7px;
-      font-size: 11.5px;
+      gap: 3px;
+      margin: 4px 0 6px;
+      font-size: 11px;
     }
 
     .tc-stop-row {
       display: flex;
       align-items: flex-start;
-      gap: 6px;
-      line-height: 1.3;
+      gap: 5px;
+      line-height: 1.28;
     }
 
     .tc-pin {
-      font-size: 9px;
+      font-size: 8.5px;
       font-weight: 800;
-      padding: 1px 4.5px;
-      border-radius: 4px;
+      padding: 1px 4px;
+      border-radius: 3px;
       color: #fff;
       flex-shrink: 0;
       margin-top: 1px;
@@ -374,10 +423,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 10.5px;
+      font-size: 10px;
       color: var(--text-secondary);
       border-top: 1px solid rgba(148, 163, 184, 0.12);
-      padding-top: 5px;
+      padding-top: 4px;
     }
 
     .tc-pill {
@@ -385,7 +434,9 @@
       font-weight: 700;
     }
 
-    /* Map Viewport */
+    /* =====================================================================
+       MAP VIEWPORT & MARKERS
+       ===================================================================== */
     main#map-wrap {
       position: relative;
       width: 100%;
@@ -401,7 +452,6 @@
       height: 100%;
     }
 
-    /* Custom Stop Pin Markers on 3D Terrain */
     .stop-pin-marker {
       display: inline-flex;
       align-items: center;
@@ -415,7 +465,7 @@
       font-weight: 800;
       font-size: 11px;
       letter-spacing: 0.02em;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.65);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.72);
       cursor: pointer;
       user-select: none;
       transition: transform 0.14s ease, box-shadow 0.14s ease;
@@ -423,8 +473,8 @@
 
     .stop-pin-marker:hover {
       transform: scale(1.18);
-      z-index: 900 !important;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.85);
+      z-index: 950 !important;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.9);
     }
 
     .stop-pin-marker.pickup { background: #10b981; z-index: 200; }
@@ -432,7 +482,6 @@
     .stop-pin-marker.dropoff { background: #ef4444; z-index: 400; }
     .stop-pin-marker.canceled { background: #dc2626; z-index: 400; }
 
-    /* Stem below 3D markers so they visibly anchor into the 3D hillside */
     .stop-pin-marker::after {
       content: "";
       position: absolute;
@@ -447,34 +496,34 @@
 
     /* 3D Chase-Plane Aircraft Icon */
     .aircraft-marker-wrap {
-      width: 58px;
-      height: 58px;
+      width: 56px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: center;
       pointer-events: none;
-      z-index: 850 !important;
-      filter: drop-shadow(0 14px 14px rgba(0, 0, 0, 0.72));
+      z-index: 900 !important;
+      filter: drop-shadow(0 12px 12px rgba(0, 0, 0, 0.75));
     }
 
     .aircraft-svg {
-      width: 52px;
-      height: 52px;
-      transition: transform 0.06s linear;
+      width: 50px;
+      height: 50px;
+      transition: transform 0.08s linear;
     }
 
     /* Pickup Tooltip */
     .pickup-tooltip {
       background: rgba(11, 18, 32, 0.96);
-      border: 1px solid rgba(56, 189, 248, 0.5);
+      border: 1px solid rgba(56, 189, 248, 0.55);
       color: #f8fafc;
-      padding: 7px 10px;
-      border-radius: 9px;
-      font-size: 11.5px;
-      line-height: 1.4;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      line-height: 1.38;
       pointer-events: none;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.65);
-      max-width: 240px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.68);
+      max-width: 230px;
       z-index: 2800 !important;
     }
 
@@ -482,11 +531,11 @@
        FLOATING UBER SCREENSHOT CARD HOVERING OVER DROP-OFF POINT
        ===================================================================== */
     .dropoff-hover-card {
-      width: 292px;
+      width: 272px;
       background: rgba(13, 20, 36, 0.98);
       border: 2px solid var(--card-accent, #38bdf8);
-      border-radius: 13px;
-      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.78), 0 0 0 1px rgba(255,255,255,0.08);
+      border-radius: 12px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255,255,255,0.08);
       color: #f8fafc;
       pointer-events: auto;
       user-select: none;
@@ -495,62 +544,62 @@
     }
 
     .dropoff-hover-card.compact-all {
-      width: 168px;
+      width: 156px;
       z-index: 700 !important;
       transition: width 0.15s ease;
     }
 
     .dropoff-hover-card.compact-all:hover {
-      width: 292px;
+      width: 272px;
       z-index: 3300 !important;
     }
 
     .dropoff-hover-card::after {
       content: "";
       position: absolute;
-      bottom: -11px;
+      bottom: -10px;
       left: 50%;
       transform: translateX(-50%);
-      border-width: 11px 11px 0 11px;
+      border-width: 10px 10px 0 10px;
       border-style: solid;
       border-color: var(--card-accent, #38bdf8) transparent transparent transparent;
     }
 
     .dropoff-hover-card.flip-below::after {
       bottom: auto;
-      top: -11px;
-      border-width: 0 11px 11px 11px;
+      top: -10px;
+      border-width: 0 10px 10px 10px;
       border-color: transparent transparent var(--card-accent, #38bdf8) transparent;
     }
 
     .dropoff-hover-card.flip-below .dhc-hover-bridge {
       bottom: auto;
-      top: -32px;
+      top: -30px;
     }
 
     .dhc-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 7px 10px;
+      padding: 6px 9px;
       background: rgba(30, 41, 59, 0.96);
-      border-radius: 11px 11px 0 0;
+      border-radius: 10px 10px 0 0;
       border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-      gap: 6px;
+      gap: 5px;
     }
 
     .dhc-title {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 11.5px;
+      gap: 5px;
+      font-size: 11px;
       font-weight: 700;
     }
 
     .dhc-badge {
-      padding: 2px 6px;
-      border-radius: 5px;
-      font-size: 10.5px;
+      padding: 1.5px 5.5px;
+      border-radius: 4px;
+      font-size: 10px;
       font-weight: 800;
       color: #fff;
       background: var(--card-accent, #3b82f6);
@@ -559,7 +608,7 @@
     .dhc-earn {
       color: #34d399;
       font-weight: 800;
-      font-size: 12.5px;
+      font-size: 12px;
     }
 
     .dhc-actions {
@@ -569,35 +618,35 @@
     }
 
     .dhc-icon-btn {
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.14);
       color: #e2e8f0;
       border: none;
       border-radius: 5px;
       width: 22px;
       height: 22px;
-      font-size: 12px;
+      font-size: 11.5px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
     }
-    .dhc-icon-btn:hover { background: rgba(255, 255, 255, 0.26); }
+    .dhc-icon-btn:hover { background: rgba(255, 255, 255, 0.28); }
 
     .dhc-img-scroll {
-      max-height: 290px;
+      max-height: 255px;
       overflow-y: auto;
       background: #ffffff;
       cursor: zoom-in;
     }
 
     .dropoff-hover-card.compact-all .dhc-img-scroll {
-      max-height: 142px;
+      max-height: 128px;
     }
     .dropoff-hover-card.compact-all:hover .dhc-img-scroll {
-      max-height: 290px;
+      max-height: 255px;
     }
 
-    .dhc-img-scroll::-webkit-scrollbar { width: 6px; }
+    .dhc-img-scroll::-webkit-scrollbar { width: 5px; }
     .dhc-img-scroll::-webkit-scrollbar-thumb {
       background: rgba(15, 23, 42, 0.35);
       border-radius: 3px;
@@ -614,10 +663,10 @@
     }
 
     .dhc-footer {
-      padding: 6px 10px;
-      font-size: 10.5px;
+      padding: 5px 9px;
+      font-size: 10px;
       background: rgba(13, 20, 36, 0.98);
-      border-radius: 0 0 11px 11px;
+      border-radius: 0 0 10px 10px;
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -643,88 +692,89 @@
       align-items: center;
       justify-content: space-between;
       color: #94a3b8;
-      font-size: 10px;
+      font-size: 9.5px;
     }
 
     .dhc-hover-bridge {
       position: absolute;
-      bottom: -32px;
+      bottom: -30px;
       left: 50%;
       transform: translateX(-50%);
-      width: 90px;
-      height: 34px;
+      width: 85px;
+      height: 32px;
     }
 
     /* =====================================================================
-       AVIATION COCKPIT FLIGHT HUD
+       AVIATION COCKPIT FLIGHT HUD (SLIM & NON-INTRUSIVE)
        ===================================================================== */
     #flight-hud {
       position: absolute;
-      top: 14px;
+      top: 10px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       z-index: 45;
       pointer-events: none;
+      max-width: 96vw;
     }
 
     .hud-telemetry-bar {
       display: flex;
       align-items: center;
-      gap: 13px;
-      background: rgba(8, 13, 24, 0.88);
-      border: 1px solid rgba(56, 189, 248, 0.45);
-      backdrop-filter: blur(10px);
-      padding: 7px 15px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
+      gap: 11px;
+      background: rgba(8, 13, 24, 0.86);
+      border: 1px solid rgba(56, 189, 248, 0.42);
+      backdrop-filter: blur(8px);
+      padding: 5px 13px;
+      border-radius: 999px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
       pointer-events: auto;
     }
 
     .hud-gauge {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 72px;
+      align-items: baseline;
+      gap: 5px;
     }
 
     .hud-gauge .g-lbl {
       font-size: 9px;
       font-weight: 700;
-      letter-spacing: 0.08em;
-      color: #64748b;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
       text-transform: uppercase;
     }
 
     .hud-gauge .g-val {
       font-family: "Consolas", "SF Mono", monospace;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 800;
       color: #38bdf8;
+      white-space: nowrap;
     }
 
     .hud-divider {
       width: 1px;
-      height: 24px;
-      background: rgba(148, 163, 184, 0.22);
+      height: 14px;
+      background: rgba(148, 163, 184, 0.25);
     }
 
     .hud-controls {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
     }
 
     .hud-btn {
       background: rgba(30, 41, 59, 0.9);
       color: #cbd5e1;
-      border: 1px solid rgba(148, 163, 184, 0.28);
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 10px;
       font-weight: 700;
       cursor: pointer;
     }
@@ -736,16 +786,20 @@
     }
 
     #hud-leg-banner {
-      background: rgba(10, 16, 30, 0.92);
+      background: rgba(10, 16, 30, 0.9);
       border: 1px solid rgba(16, 185, 129, 0.55);
       backdrop-filter: blur(8px);
-      padding: 6px 16px;
+      padding: 4px 13px;
       border-radius: 999px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       color: #f8fafc;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
       display: none;
+      max-width: 92vw;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     #cockpit-reticle {
@@ -760,26 +814,26 @@
     #cockpit-reticle.visible { display: flex; }
 
     .reticle-wings {
-      width: 240px;
-      height: 64px;
-      opacity: 0.45;
+      width: 210px;
+      height: 54px;
+      opacity: 0.35;
     }
 
     .map-hint {
       position: absolute;
-      bottom: 18px;
-      left: 18px;
-      background: rgba(10, 15, 27, 0.92);
-      border: 1px solid rgba(148, 163, 184, 0.28);
+      bottom: 14px;
+      left: 14px;
+      background: rgba(10, 15, 27, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
       backdrop-filter: blur(8px);
-      padding: 9px 14px;
-      border-radius: 10px;
-      font-size: 11.5px;
+      padding: 8px 12px;
+      border-radius: 9px;
+      font-size: 11px;
       color: #cbd5e1;
       z-index: 35;
       pointer-events: none;
-      max-width: 600px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+      max-width: 540px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
     }
     .map-hint strong { color: #38bdf8; }
 
@@ -787,20 +841,20 @@
     #lightbox {
       position: fixed;
       inset: 0;
-      background: rgba(5, 8, 15, 0.88);
+      background: rgba(5, 8, 15, 0.9);
       backdrop-filter: blur(6px);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 9999;
-      padding: 24px;
+      padding: 16px;
     }
     #lightbox.open { display: flex; }
 
     .lb-box {
-      max-width: 560px;
+      max-width: 540px;
       width: 100%;
-      max-height: 92vh;
+      max-height: 92dvh;
       background: #0f172a;
       border: 1px solid rgba(148, 163, 184, 0.35);
       border-radius: 14px;
@@ -811,11 +865,12 @@
     }
 
     .lb-head {
-      padding: 12px 16px;
+      padding: 11px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+      font-size: 12.5px;
     }
 
     .lb-body {
@@ -831,64 +886,169 @@
       filter: contrast(3.65) brightness(0.84);
     }
 
-    @media (max-width: 1220px) {
+    @media (max-width: 1260px) {
       .kpis { display: none; }
-      #app { grid-template-columns: 315px 1fr; }
+      #app { grid-template-columns: 310px 1fr; }
     }
 
-    /* Mobile Phone Layout (Samsung 5G Portrait & Landscape) */
+    /* =====================================================================
+       MOBILE-FIRST FULL-SCREEN VIEWPORT (90%+ UNOBSTRUCTED 3D MAP)
+       ===================================================================== */
     @media (max-width: 820px) {
       #app {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr 30vh;
+        display: flex;
+        flex-direction: column;
+        width: 100vw;
+        height: 100dvh;
+        overflow: hidden;
       }
+
       header#topbar {
         flex-direction: column;
         align-items: stretch;
-        padding: 8px 10px;
-        gap: 6px;
+        padding: 6px 8px;
+        gap: 5px;
+        flex-shrink: 0;
       }
-      .brand-title h1 { font-size: 13px; }
+
+      .brand {
+        justify-content: space-between;
+      }
+
+      .brand-badge {
+        font-size: 10px;
+        padding: 3.5px 7px;
+      }
+
+      .brand-title h1 {
+        font-size: 12.5px;
+      }
       .brand-title p { display: none; }
+
       .toolbar {
         overflow-x: auto;
-        padding-bottom: 2px;
+        gap: 5px;
+        padding-bottom: 1px;
+        scrollbar-width: none;
       }
-      aside#sidebar {
-        grid-row: 3;
-        border-right: none;
-        border-top: 1px solid var(--border-subtle);
-      }
-      main#map-wrap {
-        grid-row: 2;
-      }
-      #flight-hud {
-        top: 8px;
-        width: 96%;
-      }
-      .hud-telemetry-bar {
+      .toolbar::-webkit-scrollbar { display: none; }
+
+      .btn {
         padding: 5px 8px;
-        gap: 7px;
-        flex-wrap: wrap;
-        justify-content: center;
+        font-size: 11px;
       }
-      .hud-gauge { min-width: 56px; }
-      .hud-gauge .g-val { font-size: 11px; }
-      .hud-divider { display: none; }
-      #hud-leg-banner {
+
+      select.ctrl-select {
+        padding: 4px 6px;
         font-size: 10.5px;
-        padding: 4px 10px;
-        max-width: 95vw;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
+
+      main#map-wrap {
+        flex: 1;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Slim non-blocking HUD on mobile */
+      #flight-hud {
+        top: 6px;
+        gap: 4px;
+      }
+
+      .hud-telemetry-bar {
+        padding: 3.5px 10px;
+        gap: 7px;
+      }
+
+      .hud-gauge .g-lbl { font-size: 8px; }
+      .hud-gauge .g-val { font-size: 10.5px; }
+      .hud-controls { display: none; }
+
+      #hud-leg-banner {
+        font-size: 10px;
+        padding: 3px 10px;
+      }
+
       .map-hint { display: none; }
+
+      /* Compact mobile Uber screenshot hover card so you see both map & receipt */
       .dropoff-hover-card {
-        width: 230px;
+        width: 192px;
+      }
+      .dhc-header {
+        padding: 4px 7px;
+      }
+      .dhc-title {
+        font-size: 10px;
+      }
+      .dhc-earn {
+        font-size: 11px;
       }
       .dhc-img-scroll {
-        max-height: 210px;
+        max-height: 155px;
+      }
+      .dhc-footer {
+        padding: 4px 7px;
+        font-size: 9.5px;
+      }
+
+      /* Collapsible Bottom Sheet Drawer for Trips on Mobile */
+      aside#sidebar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 58dvh;
+        border-right: none;
+        border-top: 1px solid rgba(56, 189, 248, 0.45);
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.78);
+        transform: translateY(calc(100% - 46px));
+        transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+        z-index: 80;
+      }
+
+      aside#sidebar.drawer-open {
+        transform: translateY(0);
+      }
+
+      .drawer-pull-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 46px;
+        padding: 0 14px;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(10, 15, 27, 0.98));
+        border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+        cursor: pointer;
+        flex-shrink: 0;
+        user-select: none;
+      }
+
+      .drawer-pull-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #f8fafc;
+      }
+
+      .drawer-pill-handle {
+        width: 32px;
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(148, 163, 184, 0.5);
+        position: absolute;
+        top: 6px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .drawer-toggle-lbl {
+        font-size: 11px;
+        font-weight: 700;
+        color: #38bdf8;
       }
     }
   </style>
@@ -899,8 +1059,8 @@
       <div class="brand">
         <div class="brand-badge">COS TESLA LLC</div>
         <div class="brand-title">
-          <h1>Colorado Springs 3D Airplane Flyover &amp; Uber Shift Map</h1>
-          <p>Sunday, Nov 8, 2026 · Google Satellite Landscape + 3D Pikes Peak Terrain</p>
+          <h1>Colorado Springs 3D Flyover · 11.08.26</h1>
+          <p>Retina HD Google Satellite + 3D Pikes Peak Terrain · 10 Uber Trips ($118.50)</p>
         </div>
       </div>
 
@@ -924,44 +1084,60 @@
       </div>
 
       <div class="toolbar">
-        <div class="mode-pill-group" title="Switch between 3D Airplane Landscape Pitch and 2D Top-Down Map">
-          <button class="mode-pill active" id="pill-3d">✈️ 3D Landscape</button>
-          <button class="mode-pill" id="pill-2d">🗺️ 2D Top-Down</button>
+        <div class="transport-group" title="Airplane Flyover Transport Controls">
+          <button class="btn icon-only" id="btn-prev-trip" title="Previous Uber Trip">⏮</button>
+          <button class="btn primary" id="btn-flyover" title="Start or stop slow sightseeing 3D airplane flyover">
+            ✈️ Start Flyover
+          </button>
+          <button class="btn" id="btn-pause-flyover" style="display:none;" title="Pause / Resume Airplane Flyover">
+            ⏸ Pause
+          </button>
+          <button class="btn icon-only" id="btn-next-trip" title="Next Uber Trip">⏭</button>
         </div>
 
-        <button class="btn primary" id="btn-flyover" title="Fly like an airplane over Colorado Springs &amp; Pikes Peak along all 10 Uber trips">
-          ✈️ Start Plane Flyover
-        </button>
+        <select class="ctrl-select" id="speed-select" title="Airplane Flyover Speed">
+          <option value="0.35">0.35x Ultra Slow</option>
+          <option value="0.65">0.65x Slow Sightseeing</option>
+          <option value="1" selected>1.0x Scenic Cruise</option>
+          <option value="1.75">1.75x Brisk</option>
+          <option value="3">3.0x Fast</option>
+        </select>
 
-        <button class="btn" id="btn-pikes-orbit" title="Scenic aerial overlook facing West toward Pikes Peak (14,115 ft) &amp; Cheyenne Mountain">
-          🏔️ Pikes Peak Overlook
+        <div class="mode-pill-group" title="Switch between 3D Landscape Pitch and 2D Top-Down Map">
+          <button class="mode-pill active" id="pill-3d">3D</button>
+          <button class="mode-pill" id="pill-2d">2D</button>
+        </div>
+
+        <button class="btn" id="btn-pikes-orbit" title="Scenic aerial overlook facing West toward Pikes Peak (14,115 ft)">
+          🏔️ Overlook
         </button>
 
         <button class="btn" id="btn-pin-all-cards" title="Float Uber screenshots simultaneously over every drop-off point">
-          Hover All Screenshots
+          All Receipts
         </button>
 
         <button class="btn" id="btn-deadhead" title="Show/hide Tessie en-route pickup drives">
           Deadhead
         </button>
 
-        <select class="ctrl-select" id="imagery-select" title="Google Maps Landscape Layer">
-          <option value="google-hybrid" selected>Google Hybrid Satellite</option>
-          <option value="google-sat">Google Pure Satellite</option>
-          <option value="google-terrain">Google Shaded Terrain</option>
-          <option value="google-streets">Google Roadmap</option>
-        </select>
-
-        <select class="ctrl-select" id="speed-select" title="Airplane Flyover Speed">
-          <option value="0.65">0.7x Scenic</option>
-          <option value="1" selected>1.0x Cruise</option>
-          <option value="1.8">1.8x Fast</option>
-          <option value="3">3.0x Jet</option>
+        <select class="ctrl-select" id="imagery-select" title="Google Maps Retina HD Layer">
+          <option value="google-hybrid" selected>Google Hybrid HD</option>
+          <option value="google-sat">Google Satellite HD</option>
+          <option value="google-terrain">Google Terrain HD</option>
+          <option value="google-streets">Google Streets HD</option>
         </select>
       </div>
     </header>
 
     <aside id="sidebar">
+      <div class="drawer-pull-bar" id="drawer-pull-bar">
+        <div class="drawer-pill-handle"></div>
+        <div class="drawer-pull-left">
+          <span>📋 10 Uber Trips ($118.50)</span>
+        </div>
+        <span class="drawer-toggle-lbl" id="drawer-toggle-lbl">▲ Expand Trips</span>
+      </div>
+
       <div class="sidebar-header">
         <div class="sidebar-header-top">
           <h2>11.08.26 Flight Plan (10 Trips)</h2>
@@ -970,7 +1146,7 @@
         <div class="legend">
           <span class="legend-item"><i class="dot pickup"></i> Pickup (P1–P10)</span>
           <span class="legend-item"><i class="dot stop"></i> Stop (S1)</span>
-          <span class="legend-item"><i class="dot dropoff"></i> Drop-off (Hover Receipt)</span>
+          <span class="legend-item"><i class="dot dropoff"></i> Drop-off (Receipt)</span>
         </div>
       </div>
       <div class="trip-list" id="trip-list"></div>
@@ -979,33 +1155,33 @@
     <main id="map-wrap">
       <div id="map"></div>
 
-      <!-- Aviation Flight Telemetry HUD -->
+      <!-- Slim Aviation Telemetry HUD -->
       <div id="flight-hud">
         <div class="hud-telemetry-bar">
           <div class="hud-gauge">
-            <span class="g-lbl">Plane Alt</span>
-            <span class="g-val" id="hud-alt">8,450 FT MSL</span>
+            <span class="g-lbl">ALT</span>
+            <span class="g-val" id="hud-alt">8,450 FT</span>
           </div>
           <div class="hud-divider"></div>
           <div class="hud-gauge">
-            <span class="g-lbl">Ground Elev</span>
+            <span class="g-lbl">ELEV</span>
             <span class="g-val" id="hud-gnd">6,240 FT</span>
           </div>
           <div class="hud-divider"></div>
           <div class="hud-gauge">
-            <span class="g-lbl">Heading</span>
+            <span class="g-lbl">HDG</span>
             <span class="g-val" id="hud-hdg">264° W</span>
           </div>
           <div class="hud-divider"></div>
           <div class="hud-gauge">
-            <span class="g-lbl">Wing Bank</span>
+            <span class="g-lbl">BANK</span>
             <span class="g-val" id="hud-bank">0.0° LVL</span>
           </div>
-          <div class="hud-divider"></div>
           <div class="hud-controls">
-            <button class="hud-btn active" data-zoom="14.15" data-pitch="74" title="Low Sightseeing Pass (~1,500 ft AGL)">Low Pass</button>
-            <button class="hud-btn" data-zoom="13.25" data-pitch="71" title="Standard Cruise (~3,000 ft AGL)">Cruise Alt</button>
-            <button class="hud-btn" data-zoom="12.2" data-pitch="67" title="High Recon Overlook (~5,800 ft AGL)">High Alt</button>
+            <div class="hud-divider"></div>
+            <button class="hud-btn active" data-zoom="14.35" data-pitch="61" title="Crisp Low Sightseeing Pass (~1,400 ft AGL)">Low Pass</button>
+            <button class="hud-btn" data-zoom="13.45" data-pitch="58" title="Standard Cruise (~2,800 ft AGL)">Cruise</button>
+            <button class="hud-btn" data-zoom="12.35" data-pitch="54" title="High Recon Overlook (~5,500 ft AGL)">High Alt</button>
           </div>
         </div>
         <div id="hud-leg-banner">✈️ Ready for Takeoff — Colorado Springs Sector</div>
@@ -1023,7 +1199,7 @@
       </div>
 
       <div class="map-hint" id="map-hint">
-        <strong>✈️ 3D Landscape Flight:</strong> Hover over any red <strong>Drop-off (D1–D10)</strong> pin to float its <strong>Uber Screenshot</strong> right over the drop-off point on the 3D hillside, or click <strong>Start Plane Flyover</strong> to bank &amp; fly over Colorado Springs and Pikes Peak. (Right-drag rotates/tilts the 3D camera.)
+        <strong>✈️ Retina HD 3D Flyover:</strong> Tap or hover any red <strong>Drop-off (D1–D10)</strong> pin to float its <strong>Uber Screenshot</strong> over the drop-off point, or use <strong>Start Flyover</strong> / <strong>⏸ Pause</strong> / <strong>⏮ ⏭</strong> to fly slowly along each trip.
       </div>
     </main>
   </div>
@@ -1056,6 +1232,7 @@
     let selectedTripSeq = null;
     let pinnedSeq = null;
     let hideHoverTimer = null;
+    let mobileDrawerOpen = false;
 
     // Active single floating Uber screenshot marker anchored to drop-off
     let activeHoverMarker = null;
@@ -1063,15 +1240,28 @@
     let pickupTooltipMarker = null;
 
     // Per-trip all-mode screenshot markers
-    const allScreenshotMarkers = new Map(); // seq -> maplibregl.Marker
+    const allScreenshotMarkers = new Map();
 
     // Airplane Flight Engine State
     let flightActive = false;
+    let flightPaused = false;
     let flightToken = 0;
-    let flightZoom = 14.15;
-    let flightPitch = 74;
+    let flightZoom = 14.35;
+    let flightPitch = 61;
     let aircraftMarker = null;
     let aircraftSvgEl = null;
+
+    function isMobileViewport() {
+      return window.innerWidth <= 820;
+    }
+
+    function setMobileDrawer(open) {
+      mobileDrawerOpen = !!open;
+      const sb = document.getElementById("sidebar");
+      const lbl = document.getElementById("drawer-toggle-lbl");
+      if (sb) sb.classList.toggle("drawer-open", mobileDrawerOpen);
+      if (lbl) lbl.textContent = mobileDrawerOpen ? "▼ Hide Trips" : "▲ Expand Trips";
+    }
 
     // Navigation & Trigonometry Helpers
     function toRad(d) { return (d * Math.PI) / 180; }
@@ -1127,18 +1317,50 @@
 
     function updateFlightHud(groundElevM, zoom, bearingDeg, rollDeg) {
       const gndFt = Math.round((groundElevM || 1900) * 3.28084);
-      // Approximate AGL based on flight zoom level
-      const aglFt = Math.round(1650 * Math.pow(2, 14.15 - zoom));
+      const aglFt = Math.round(1450 * Math.pow(2, 14.35 - zoom));
       const mslFt = gndFt + aglFt;
       const hdg = Math.round(((bearingDeg % 360) + 360) % 360);
       const bankAbs = Math.abs(rollDeg).toFixed(1);
       const bankDir = Math.abs(rollDeg) < 0.8 ? "LVL" : (rollDeg > 0 ? "R" : "L");
 
-      document.getElementById("hud-alt").textContent = `${mslFt.toLocaleString()} FT MSL`;
+      document.getElementById("hud-alt").textContent = `${mslFt.toLocaleString()} FT`;
       document.getElementById("hud-gnd").textContent = `${gndFt.toLocaleString()} FT`;
       document.getElementById("hud-hdg").textContent = `${String(hdg).padStart(3, "0")}° ${compassSector(hdg)}`;
       document.getElementById("hud-bank").textContent = `${bankAbs}° ${bankDir}`;
       document.getElementById("reticle-svg").style.transform = `rotate(${(-rollDeg).toFixed(1)}deg)`;
+    }
+
+    // Wait briefly for Retina HD tiles to finish rendering before starting flight pass
+    function waitForMapTiles(maxWaitMs = 1400) {
+      return new Promise(resolve => {
+        if (!map) { resolve(); return; }
+        let done = false;
+        const finish = () => {
+          if (!done) {
+            done = true;
+            resolve();
+          }
+        };
+        const timer = setTimeout(finish, maxWaitMs);
+        map.once("idle", () => {
+          clearTimeout(timer);
+          finish();
+        });
+      });
+    }
+
+    // Wait while paused
+    function waitWhilePaused(token) {
+      return new Promise(resolve => {
+        function check() {
+          if (!flightActive || token !== flightToken || !flightPaused) {
+            resolve();
+          } else {
+            requestAnimationFrame(check);
+          }
+        }
+        check();
+      });
     }
 
     /* =====================================================================
@@ -1151,7 +1373,7 @@
 
       const statusTag = t.status === "CANCELED" ? "CANCELED" : t.service;
       const fsdText = t.fsd_pct != null ? `${t.fsd_pct.toFixed(0)}% FSD` : "Cancel Fee";
-      const miText = t.tessie_miles != null ? `${t.tessie_miles.toFixed(2)} Tessie mi` : "US-24 Turnaround";
+      const miText = t.tessie_miles != null ? `${t.tessie_miles.toFixed(2)} mi` : "US-24 Turnaround";
 
       div.innerHTML = `
         <div class="dhc-header">
@@ -1161,11 +1383,11 @@
             <span class="dhc-earn">$${t.earnings_usd.toFixed(2)}</span>
           </div>
           <div class="dhc-actions">
-            <button class="dhc-icon-btn btn-zoom" title="Open full Uber screenshot">⤢</button>
+            <button class="dhc-icon-btn btn-zoom" title="Tap to view full-screen Uber receipt">🔍</button>
             ${!compactAll ? '<button class="dhc-icon-btn btn-close" title="Close">✕</button>' : ''}
           </div>
         </div>
-        <div class="dhc-img-scroll" title="Scroll receipt or click to enlarge">
+        <div class="dhc-img-scroll" title="Tap to open full-screen receipt">
           <img src="${encodeURI(t.screenshot)}" alt="Uber Trip ${t.seq} Screenshot"
                class="${t.needs_contrast_boost ? 'contrast-boost' : ''}" />
         </div>
@@ -1231,11 +1453,11 @@
 
       const dom = createScreenshotDom(trip, false);
 
-      // Flip below pin if hovering manually near the top edge of the viewport so the card never clips
       let flipBelow = false;
       if (map && !flightActive && !forceAbove) {
         const pt = map.project([trip.dropoff_point.lng, trip.dropoff_point.lat]);
-        if (pt && pt.y < 335) flipBelow = true;
+        const threshold = isMobileViewport() ? 240 : 335;
+        if (pt && pt.y < threshold) flipBelow = true;
       }
       if (flipBelow) dom.classList.add("flip-below");
 
@@ -1286,7 +1508,7 @@
     }
 
     /* =====================================================================
-       BUILD GEOJSON ROUTES & 3D TERRAIN MAP
+       BUILD GEOJSON ROUTES & RETINA HD 3D TERRAIN MAP
        ===================================================================== */
     function buildGeoJsonCollections(data) {
       const tripFeatures = [];
@@ -1330,36 +1552,40 @@
       buildSidebar(data);
       const { tripsGeoJson, deadheadGeoJson } = buildGeoJsonCollections(data);
 
+      // Use scale=2 Retina 512x512 Google tiles with tileSize=256 and high pixelRatio for razor-sharp imagery!
       map = new maplibregl.Map({
         container: "map",
         center: [-104.805, 38.868],
-        zoom: 11.45,
-        pitch: 72,
+        zoom: isMobileViewport() ? 11.2 : 11.6,
+        pitch: 61,
         bearing: 263,
         roll: 0,
-        maxPitch: 82,
+        maxPitch: 76,
         rollEnabled: true,
         antialias: true,
+        pixelRatio: Math.min(window.devicePixelRatio || 2, 3),
         style: {
           version: 8,
           sources: {
             "google-hybrid": {
               type: "raster",
               tiles: [
-                "https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}",
-                "https://mt1.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}",
-                "https://mt2.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}",
-                "https://mt3.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}"
+                "https://mt0.google.com/vt/lyrs=y&hl=en&scale=2&x={x}&y={y}&z={z}",
+                "https://mt1.google.com/vt/lyrs=y&hl=en&scale=2&x={x}&y={y}&z={z}",
+                "https://mt2.google.com/vt/lyrs=y&hl=en&scale=2&x={x}&y={y}&z={z}",
+                "https://mt3.google.com/vt/lyrs=y&hl=en&scale=2&x={x}&y={y}&z={z}"
               ],
               tileSize: 256,
               maxzoom: 20,
-              attribution: "Map data © Google · Telemetry © COS TESLA LLC (Tessie)"
+              attribution: "Map data © Google Retina HD · Telemetry © COS TESLA LLC (Tessie)"
             },
             "google-sat": {
               type: "raster",
               tiles: [
-                "https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}",
-                "https://mt1.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}"
+                "https://mt0.google.com/vt/lyrs=s&hl=en&scale=2&x={x}&y={y}&z={z}",
+                "https://mt1.google.com/vt/lyrs=s&hl=en&scale=2&x={x}&y={y}&z={z}",
+                "https://mt2.google.com/vt/lyrs=s&hl=en&scale=2&x={x}&y={y}&z={z}",
+                "https://mt3.google.com/vt/lyrs=s&hl=en&scale=2&x={x}&y={y}&z={z}"
               ],
               tileSize: 256,
               maxzoom: 20
@@ -1367,8 +1593,10 @@
             "google-terrain": {
               type: "raster",
               tiles: [
-                "https://mt0.google.com/vt/lyrs=p&hl=en&x={x}&y={y}&z={z}",
-                "https://mt1.google.com/vt/lyrs=p&hl=en&x={x}&y={y}&z={z}"
+                "https://mt0.google.com/vt/lyrs=p&hl=en&scale=2&x={x}&y={y}&z={z}",
+                "https://mt1.google.com/vt/lyrs=p&hl=en&scale=2&x={x}&y={y}&z={z}",
+                "https://mt2.google.com/vt/lyrs=p&hl=en&scale=2&x={x}&y={y}&z={z}",
+                "https://mt3.google.com/vt/lyrs=p&hl=en&scale=2&x={x}&y={y}&z={z}"
               ],
               tileSize: 256,
               maxzoom: 20
@@ -1376,8 +1604,10 @@
             "google-streets": {
               type: "raster",
               tiles: [
-                "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}",
-                "https://mt1.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}"
+                "https://mt0.google.com/vt/lyrs=m&hl=en&scale=2&x={x}&y={y}&z={z}",
+                "https://mt1.google.com/vt/lyrs=m&hl=en&scale=2&x={x}&y={y}&z={z}",
+                "https://mt2.google.com/vt/lyrs=m&hl=en&scale=2&x={x}&y={y}&z={z}",
+                "https://mt3.google.com/vt/lyrs=m&hl=en&scale=2&x={x}&y={y}&z={z}"
               ],
               tileSize: 256,
               maxzoom: 20
@@ -1406,16 +1636,40 @@
             }
           },
           layers: [
-            { id: "google-hybrid", type: "raster", source: "google-hybrid", layout: { visibility: "visible" } },
-            { id: "google-sat", type: "raster", source: "google-sat", layout: { visibility: "none" } },
-            { id: "google-terrain", type: "raster", source: "google-terrain", layout: { visibility: "none" } },
-            { id: "google-streets", type: "raster", source: "google-streets", layout: { visibility: "none" } },
+            {
+              id: "google-hybrid",
+              type: "raster",
+              source: "google-hybrid",
+              layout: { visibility: "visible" },
+              paint: { "raster-resampling": "linear", "raster-fade-duration": 150 }
+            },
+            {
+              id: "google-sat",
+              type: "raster",
+              source: "google-sat",
+              layout: { visibility: "none" },
+              paint: { "raster-resampling": "linear", "raster-fade-duration": 150 }
+            },
+            {
+              id: "google-terrain",
+              type: "raster",
+              source: "google-terrain",
+              layout: { visibility: "none" },
+              paint: { "raster-resampling": "linear", "raster-fade-duration": 150 }
+            },
+            {
+              id: "google-streets",
+              type: "raster",
+              source: "google-streets",
+              layout: { visibility: "none" },
+              paint: { "raster-resampling": "linear", "raster-fade-duration": 150 }
+            },
             {
               id: "mountain-hillshade",
               type: "hillshade",
               source: "hillshade-dem",
               paint: {
-                "hillshade-exaggeration": 0.34,
+                "hillshade-exaggeration": 0.26,
                 "hillshade-shadow-color": "#040814",
                 "hillshade-highlight-color": "#ffffff",
                 "hillshade-illumination-direction": 315
@@ -1440,8 +1694,8 @@
               layout: { "line-cap": "round", "line-join": "round" },
               paint: {
                 "line-color": ["get", "color"],
-                "line-width": 12,
-                "line-blur": 6,
+                "line-width": 11,
+                "line-blur": 5,
                 "line-opacity": 0.48
               }
             },
@@ -1452,7 +1706,7 @@
               layout: { "line-cap": "round", "line-join": "round" },
               paint: {
                 "line-color": "#090d16",
-                "line-width": 7.5,
+                "line-width": 7,
                 "line-opacity": 0.9
               }
             },
@@ -1463,22 +1717,22 @@
               layout: { "line-cap": "round", "line-join": "round" },
               paint: {
                 "line-color": ["get", "color"],
-                "line-width": 4.8,
+                "line-width": 4.6,
                 "line-opacity": 0.98
               }
             }
           ],
           terrain: {
             source: "terrain-dem",
-            exaggeration: 1.42
+            exaggeration: 1.22
           },
           sky: {
             "sky-color": "#0b2954",
-            "sky-horizon-blend": 0.48,
+            "sky-horizon-blend": 0.45,
             "horizon-color": "#87cefa",
-            "horizon-fog-blend": 0.55,
+            "horizon-fog-blend": 0.5,
             "fog-color": "#cfe9fc",
-            "fog-ground-blend": 0.22
+            "fog-ground-blend": 0.16
           }
         }
       });
@@ -1498,7 +1752,6 @@
           pin.textContent = tag;
 
           if (s.type === "dropoff" || s.type === "canceled") {
-            // Hovering over the drop-off pin floats the Uber Screenshot directly over the drop-off point!
             pin.addEventListener("mouseenter", () => {
               showDropoffScreenshot(t, false);
             });
@@ -1510,11 +1763,11 @@
             pin.addEventListener("click", (e) => {
               e.stopPropagation();
               stopPlaneFlyover();
+              setMobileDrawer(false);
               pinnedSeq = t.seq;
               showDropoffScreenshot(t, true);
             });
           } else {
-            // Pickup or intermediate rider stop tooltip
             pin.addEventListener("mouseenter", () => {
               if (pickupTooltipMarker) pickupTooltipMarker.remove();
               const role = s.type === "waypoint" ? `Intermediate Rider Stop #${s.stop_number}` : "Pickup Stop";
@@ -1526,7 +1779,7 @@
                   Trip #${String(t.seq).padStart(2, "0")} · ${role}
                 </div>
                 <div style="font-weight:600;margin-top:2px;">${s.label}</div>
-                <div style="color:#94a3b8;font-size:10.5px;margin-top:2px;">
+                <div style="color:#94a3b8;font-size:10px;margin-top:2px;">
                   ${s.time_mst} · Elev ${elevFt.toLocaleString()} ft · $${t.earnings_usd.toFixed(2)}
                 </div>
               `;
@@ -1543,6 +1796,7 @@
             pin.addEventListener("click", (e) => {
               e.stopPropagation();
               stopPlaneFlyover();
+              setMobileDrawer(false);
               focusSingleTrip(t.seq);
             });
           }
@@ -1552,7 +1806,6 @@
             .addTo(map);
         });
 
-        // Pre-create compact marker for "Hover All Screenshots" mode
         const compactDom = createScreenshotDom(t, true);
         const compactMarker = new maplibregl.Marker({
           element: compactDom,
@@ -1574,7 +1827,6 @@
       aircraftSvgEl = planeWrap.querySelector(".aircraft-svg");
       aircraftMarker = new maplibregl.Marker({ element: planeWrap, anchor: "center" });
 
-      // Route hover / click interaction
       map.on("load", () => {
         map.on("mousemove", "uber-route-core", (e) => {
           if (flightActive) return;
@@ -1595,6 +1847,7 @@
           const seq = e.features?.[0]?.properties?.seq;
           if (seq) {
             stopPlaneFlyover();
+            setMobileDrawer(false);
             focusSingleTrip(seq);
           }
         });
@@ -1620,20 +1873,19 @@
 
         updateFlightHud(1900, map.getZoom(), map.getBearing(), 0);
 
-        // Support ?flyover=1 autostart cleanly once terrain & style are ready!
         const params = new URLSearchParams(window.location.search);
         if (params.get("flyover") === "1") {
-          setTimeout(() => startPlaneFlyover(), 450);
+          setTimeout(() => startPlaneFlyover(), 500);
         } else if (params.get("trip")) {
-          setTimeout(() => focusSingleTrip(Number(params.get("trip"))), 450);
+          setTimeout(() => focusSingleTrip(Number(params.get("trip"))), 500);
         }
       });
     }
 
     /* =====================================================================
-       CONTINUOUS 60 FPS AIRPLANE FLYOVER ENGINE OVER 3D LANDSCAPE
+       SLOW, BUTTER-SMOOTH 60 FPS AIRPLANE FLYOVER ENGINE OVER 3D LANDSCAPE
        ===================================================================== */
-    function buildResampledTrack(points, stepMeters = 50) {
+    function buildResampledTrack(points, stepMeters = 15) {
       if (!points || !points.length) return [];
       if (points.length === 1) return [{ ...points[0] }];
       const out = [{ ...points[0] }];
@@ -1643,7 +1895,7 @@
         const a = points[i - 1];
         const b = points[i];
         const segLen = haversineMeters(a, b);
-        if (segLen < 1) continue;
+        if (segLen < 0.5) continue;
 
         let dist = stepMeters - carry;
         while (dist <= segLen) {
@@ -1664,6 +1916,7 @@
     function stopPlaneFlyover() {
       if (!flightActive) return;
       flightActive = false;
+      flightPaused = false;
       flightToken++;
       aircraftMarker.remove();
       if (pickupTooltipMarker) {
@@ -1673,11 +1926,30 @@
       if (map && map.setRoll) map.setRoll(0);
 
       const btn = document.getElementById("btn-flyover");
-      btn.textContent = "✈️ Start Plane Flyover";
+      btn.textContent = "✈️ Start Flyover";
       btn.classList.remove("playing");
+
+      const pauseBtn = document.getElementById("btn-pause-flyover");
+      pauseBtn.style.display = "none";
+      pauseBtn.classList.remove("paused-state");
+      pauseBtn.textContent = "⏸ Pause";
+
       document.getElementById("cockpit-reticle").classList.remove("visible");
       document.getElementById("hud-leg-banner").style.display = "none";
       updateRouteHighlight(selectedTripSeq);
+    }
+
+    function togglePauseFlyover() {
+      if (!flightActive) return;
+      flightPaused = !flightPaused;
+      const pauseBtn = document.getElementById("btn-pause-flyover");
+      if (flightPaused) {
+        pauseBtn.textContent = "▶ Resume";
+        pauseBtn.classList.add("paused-state");
+      } else {
+        pauseBtn.textContent = "⏸ Pause";
+        pauseBtn.classList.remove("paused-state");
+      }
     }
 
     function flyAlongTrack(track, baseDurationMs, token, waypoints = []) {
@@ -1698,7 +1970,13 @@
             return;
           }
 
-          const dt = Math.min(60, now - lastNow);
+          if (flightPaused) {
+            lastNow = now;
+            requestAnimationFrame(frame);
+            return;
+          }
+
+          const dt = Math.min(50, now - lastNow);
           lastNow = now;
 
           const speedMult = parseFloat(document.getElementById("speed-select").value || "1");
@@ -1715,33 +1993,31 @@
           const planeLng = pA.lng + (pB.lng - pA.lng) * frac;
           const gndAlt = (pA.alt_m || 1900) + ((pB.alt_m || 1900) - (pA.alt_m || 1900)) * frac;
 
-          // Smooth pilot look-ahead (~450m ahead on flight path)
-          const lookIdx = Math.min(track.length - 1, idx + 9);
+          // Smooth pilot look-ahead (~380m ahead on 15m-resampled flight path)
+          const lookIdx = Math.min(track.length - 1, idx + 25);
           const pLook = track[lookIdx];
           let targetBearing = curBearing;
-          if (haversineMeters({ lat: planeLat, lng: planeLng }, pLook) > 12) {
+          if (haversineMeters({ lat: planeLat, lng: planeLng }, pLook) > 10) {
             targetBearing = computeBearing(planeLat, planeLng, pLook.lat, pLook.lng);
           }
 
           const turnDelta = shortestAngleDelta(curBearing, targetBearing);
-          curBearing = lerpAngle(curBearing, targetBearing, Math.min(1, dt * 0.0045));
+          curBearing = lerpAngle(curBearing, targetBearing, Math.min(1, dt * 0.0028));
 
-          // Aerodynamic wing bank into turns (-16° .. +16°)
-          const desiredRoll = Math.max(-16, Math.min(16, turnDelta * 0.52));
-          curRoll = curRoll + (desiredRoll - curRoll) * Math.min(1, dt * 0.0075);
+          // Gentle aerodynamic wing bank into turns (-12° .. +12°)
+          const desiredRoll = Math.max(-12, Math.min(12, turnDelta * 0.42));
+          curRoll = curRoll + (desiredRoll - curRoll) * Math.min(1, dt * 0.0055);
 
-          // Position aircraft in lower-center foreground by placing camera target ~280m ahead of aircraft!
-          const leadMeters = 280 * Math.pow(2, 14.15 - flightZoom);
+          // Position aircraft in lower-center foreground by placing camera target ~220m ahead of aircraft
+          const leadMeters = 220 * Math.pow(2, 14.35 - flightZoom);
           const camCenter = offsetCoordMeters(planeLat, planeLng, curBearing, leadMeters);
 
           aircraftMarker.setLngLat([planeLng, planeLat]);
           if (aircraftSvgEl) {
-            // Plane nose always points forward (up on screen) with subtle bank tilt!
-            const noseOffset = shortestAngleDelta(curBearing, targetBearing) * 0.45;
+            const noseOffset = shortestAngleDelta(curBearing, targetBearing) * 0.35;
             aircraftSvgEl.style.transform = `rotate(${noseOffset.toFixed(1)}deg)`;
           }
 
-          // Check if passing an intermediate rider stop (e.g. Trip 10 Stop S1)
           if (waypoints.length) {
             for (const wp of waypoints) {
               if (!wp._shown && haversineMeters({ lat: planeLat, lng: planeLng }, wp) < 160) {
@@ -1777,32 +2053,42 @@
       return new Promise(resolve => {
         const startBearing = map.getBearing();
         let curRoll = map.getRoll ? map.getRoll() : 0;
-        const t0 = performance.now();
+        let elapsed = 0;
+        let lastNow = performance.now();
 
         function frame(now) {
           if (!flightActive || token !== flightToken) {
             resolve();
             return;
           }
-          const speedMult = parseFloat(document.getElementById("speed-select").value || "1");
-          const adjDuration = Math.max(1900, durationMs / Math.sqrt(speedMult));
-          const p = Math.min(1, (now - t0) / adjDuration);
+          if (flightPaused) {
+            lastNow = now;
+            requestAnimationFrame(frame);
+            return;
+          }
 
-          const brg = (startBearing + p * 42) % 360;
-          const targetRoll = p < 0.85 ? 8.5 : 0;
-          curRoll = curRoll + (targetRoll - curRoll) * 0.08;
+          const dt = Math.min(50, now - lastNow);
+          lastNow = now;
+          const speedMult = parseFloat(document.getElementById("speed-select").value || "1");
+          const adjDuration = Math.max(4500, durationMs / Math.sqrt(speedMult));
+          elapsed += dt;
+          const p = Math.min(1, elapsed / adjDuration);
+
+          const brg = (startBearing + p * 28) % 360;
+          const targetRoll = p < 0.85 ? 5.5 : 0;
+          curRoll = curRoll + (targetRoll - curRoll) * 0.06;
 
           aircraftMarker.setLngLat([dropPoint.lng, dropPoint.lat]);
 
-          // Offset camera target slightly ahead of drop-off so the floating screenshot card sits dead-center!
-          const targetZoom = Math.min(14.5, flightZoom + 0.25);
-          const leadM = is3DMode ? 210 * Math.pow(2, 14.15 - targetZoom) : 0;
+          const targetZoom = Math.min(14.65, flightZoom + 0.2);
+          const baseLead = isMobileViewport() ? 145 : 195;
+          const leadM = is3DMode ? baseLead * Math.pow(2, 14.35 - targetZoom) : 0;
           const camPt = is3DMode ? offsetCoordMeters(dropPoint.lat, dropPoint.lng, brg, leadM) : dropPoint;
 
           map.jumpTo({
             center: [camPt.lng, camPt.lat],
             zoom: targetZoom,
-            pitch: is3DMode ? 69 : 0,
+            pitch: is3DMode ? 60 : 0,
             bearing: is3DMode ? brg : 0,
             roll: is3DMode ? curRoll : 0
           });
@@ -1821,8 +2107,8 @@
       });
     }
 
-    async function startPlaneFlyover() {
-      if (flightActive) {
+    async function startPlaneFlyover(forceStartIdx = null) {
+      if (flightActive && forceStartIdx === null) {
         stopPlaneFlyover();
         return;
       }
@@ -1832,20 +2118,30 @@
       if (showAllScreenshots) {
         toggleAllScreenshots(false);
       }
+      setMobileDrawer(false);
 
       flightActive = true;
+      flightPaused = false;
       const myToken = ++flightToken;
 
       const btn = document.getElementById("btn-flyover");
-      btn.textContent = "⏹ Stop Plane Flyover";
+      btn.textContent = "⏹ Stop";
       btn.classList.add("playing");
+
+      const pauseBtn = document.getElementById("btn-pause-flyover");
+      pauseBtn.style.display = "inline-flex";
+      pauseBtn.textContent = "⏸ Pause";
+      pauseBtn.classList.remove("paused-state");
+
       document.getElementById("cockpit-reticle").classList.add("visible");
 
       const banner = document.getElementById("hud-leg-banner");
       banner.style.display = "block";
 
       const trips = window.SHIFT_MAP_DATA.trips;
-      const startIdx = selectedTripSeq ? Math.max(0, trips.findIndex(x => x.seq === selectedTripSeq)) : 0;
+      const startIdx = forceStartIdx !== null
+        ? forceStartIdx
+        : (selectedTripSeq ? Math.max(0, trips.findIndex(x => x.seq === selectedTripSeq)) : 0);
 
       const firstTrip = trips[startIdx];
       const firstRoute = (firstTrip.route_path && firstTrip.route_path.length > 1)
@@ -1859,22 +2155,27 @@
       updateRouteHighlight(firstTrip.seq);
       aircraftMarker.setLngLat([p0.lng, p0.lat]).addTo(map);
 
-      banner.textContent = `✈️ Descending onto Trip #${String(firstTrip.seq).padStart(2, "0")} Pickup · ${firstTrip.pickup_address}`;
+      banner.textContent = `✈️ Approaching Trip #${String(firstTrip.seq).padStart(2, "0")} Pickup · ${firstTrip.pickup_address}`;
 
-      const initCam = offsetCoordMeters(p0.lat, p0.lng, initBrg, 260);
+      const initCam = offsetCoordMeters(p0.lat, p0.lng, initBrg, 220);
       map.flyTo({
         center: [initCam.lng, initCam.lat],
         zoom: flightZoom,
         pitch: flightPitch,
         bearing: initBrg,
-        duration: 2100,
+        duration: 2400,
         essential: true
       });
 
-      await new Promise(r => setTimeout(r, 2200));
+      await new Promise(r => setTimeout(r, 2500));
+      // Allow Retina HD tiles at the starting location to finish loading before takeoff
+      await waitForMapTiles(1200);
 
       for (let i = startIdx; i < trips.length; i++) {
         if (!flightActive || myToken !== flightToken) break;
+        await waitWhilePaused(myToken);
+        if (!flightActive || myToken !== flightToken) break;
+
         const t = trips[i];
         selectedTripSeq = t.seq;
         highlightSidebarCard(t.seq);
@@ -1886,7 +2187,7 @@
         const rawRoute = (t.route_path && t.route_path.length > 1) ? t.route_path : [t.pickup_point, t.dropoff_point];
         const routeStart = rawRoute[0];
 
-        // Smooth continuous ferry flight from previous drop-off to next pickup (skip if already co-located, e.g. Trip 5 -> Trip 6)!
+        // Smooth continuous ferry flight from previous drop-off to next pickup (skip if co-located)
         if (i > startIdx) {
           const prevDrop = trips[i - 1].dropoff_point;
           const ferryDist = haversineMeters(prevDrop, routeStart);
@@ -1894,11 +2195,12 @@
             const ferryPts = (t.deadhead_path && t.deadhead_path.length > 1)
               ? t.deadhead_path
               : [prevDrop, routeStart];
-            const ferryTrack = buildResampledTrack(ferryPts, 80);
+            const ferryTrack = buildResampledTrack(ferryPts, 25);
             if (ferryTrack.length > 2) {
               closeDropoffScreenshot();
-              banner.textContent = `✈️ Ferry Flight → Trip #${String(t.seq).padStart(2, "0")} Pickup (${t.pickup_address})`;
-              const ferryMs = Math.max(1500, Math.min(3900, ferryDist * 0.22));
+              banner.textContent = `✈️ En-Route Ferry → Trip #${String(t.seq).padStart(2, "0")} Pickup (${t.pickup_address})`;
+              // Slow, steady ferry speed (6s to 16s) so tiles load cleanly
+              const ferryMs = Math.max(6000, Math.min(16000, ferryDist * 0.95));
               await flyAlongTrack(ferryTrack, ferryMs, myToken);
             }
           }
@@ -1906,24 +2208,25 @@
 
         if (!flightActive || myToken !== flightToken) break;
 
-        // Fly the Uber Trip along its exact Tessie GPS route!
+        // Fly the Uber Trip along its exact Tessie GPS route at a slow, scenic sightseeing pace!
         closeDropoffScreenshot();
         const fsdLabel = t.fsd_pct != null ? ` · ${t.fsd_pct.toFixed(0)}% FSD` : "";
-        banner.textContent = `✈️ Flying Trip #${String(t.seq).padStart(2, "0")} (${t.service} · $${t.earnings_usd.toFixed(2)}${fsdLabel}) → ${t.dropoff_address}`;
+        banner.textContent = `✈️ Trip #${String(t.seq).padStart(2, "0")} (${t.service} · $${t.earnings_usd.toFixed(2)}${fsdLabel}) → ${t.dropoff_address}`;
 
-        const flightTrack = buildResampledTrack(rawRoute, 50);
-        const routeMeters = (t.tessie_miles || 4.5) * 1609.34;
-        const flightMs = Math.max(3000, Math.min(8800, routeMeters * 0.34));
+        const flightTrack = buildResampledTrack(rawRoute, 15);
+        const routeMeters = (t.tessie_miles || 4.0) * 1609.34;
+        // ~14s to 38s per trip at 1.0x Scenic Cruise (4.5x slower than before so Retina HD tiles stay razor-sharp!)
+        const flightMs = Math.max(14000, Math.min(38000, routeMeters * 1.55));
         const waypoints = (t.stops || []).filter(s => s.type === "waypoint").map(s => ({ ...s, _shown: false }));
 
         await flyAlongTrack(flightTrack, flightMs, myToken, waypoints);
 
         if (!flightActive || myToken !== flightToken) break;
 
-        // Arrive at Drop-off -> Hover Uber Receipt Screenshot over Drop-off & bank gently!
+        // Arrive at Drop-off -> Float Uber Receipt Screenshot over Drop-off & orbit slowly for 7.5 seconds!
         banner.textContent = `📍 Drop-off #${String(t.seq).padStart(2, "0")} · ${t.dropoff_point.label} · $${t.earnings_usd.toFixed(2)}`;
         showDropoffScreenshot(t, true, true);
-        await orbitDropoffWithScreenshot(t.dropoff_point, 3500, myToken);
+        await orbitDropoffWithScreenshot(t.dropoff_point, 7500, myToken);
       }
 
       if (myToken === flightToken) {
@@ -1934,6 +2237,20 @@
       }
     }
 
+    function stepTrip(delta) {
+      const trips = window.SHIFT_MAP_DATA.trips;
+      let curIdx = selectedTripSeq ? trips.findIndex(x => x.seq === selectedTripSeq) : -1;
+      if (curIdx < 0) curIdx = delta > 0 ? 0 : trips.length - 1;
+      else curIdx = (curIdx + delta + trips.length) % trips.length;
+
+      if (flightActive) {
+        startPlaneFlyover(curIdx);
+      } else {
+        setMobileDrawer(false);
+        focusSingleTrip(trips[curIdx].seq);
+      }
+    }
+
     /* =====================================================================
        UI CONTROLS & CAMERA SHORTCUTS
        ===================================================================== */
@@ -1941,12 +2258,12 @@
       if (!map || !map.getLayer("uber-route-core")) return;
       if (seq == null) {
         map.setPaintProperty("uber-route-core", "line-opacity", 0.98);
-        map.setPaintProperty("uber-route-core", "line-width", 4.8);
+        map.setPaintProperty("uber-route-core", "line-width", 4.6);
         map.setPaintProperty("uber-route-glow", "line-opacity", 0.48);
         map.setPaintProperty("uber-route-casing", "line-opacity", 0.9);
       } else {
         map.setPaintProperty("uber-route-core", "line-opacity", ["case", ["==", ["get", "seq"], seq], 1.0, 0.3]);
-        map.setPaintProperty("uber-route-core", "line-width", ["case", ["==", ["get", "seq"], seq], 6.2, 3.8]);
+        map.setPaintProperty("uber-route-core", "line-width", ["case", ["==", ["get", "seq"], seq], 6.2, 3.6]);
         map.setPaintProperty("uber-route-glow", "line-opacity", ["case", ["==", ["get", "seq"], seq], 0.72, 0.14]);
         map.setPaintProperty("uber-route-casing", "line-opacity", ["case", ["==", ["get", "seq"], seq], 0.96, 0.35]);
       }
@@ -1971,15 +2288,15 @@
 
       showDropoffScreenshot(t, true, true);
 
-      // Offset camera target slightly ahead of drop-off so the screenshot card hovering above the pin sits centered!
+      const leadDist = isMobileViewport() ? 145 : 205;
       const camPt = is3DMode
-        ? offsetCoordMeters(d.lat, d.lng, brg, 220)
-        : offsetCoordMeters(d.lat, d.lng, 0, 260);
+        ? offsetCoordMeters(d.lat, d.lng, brg, leadDist)
+        : offsetCoordMeters(d.lat, d.lng, 0, leadDist);
 
       map.flyTo({
         center: [camPt.lng, camPt.lat],
-        zoom: is3DMode ? 14.1 : 13.4,
-        pitch: is3DMode ? 70 : 0,
+        zoom: is3DMode ? 14.35 : 13.6,
+        pitch: is3DMode ? 61 : 0,
         bearing: is3DMode ? brg : 0,
         duration: 1800,
         essential: true
@@ -1988,6 +2305,7 @@
 
     function flyToPikesPeakOverlook() {
       stopPlaneFlyover();
+      setMobileDrawer(false);
       selectedTripSeq = null;
       pinnedSeq = null;
       highlightSidebarCard(null);
@@ -1996,11 +2314,10 @@
 
       if (!is3DMode) setMapDimensionMode(true);
 
-      // Sweeping aerial view over Colorado Springs facing West toward Pikes Peak (14,115 ft)!
       map.flyTo({
         center: [-104.805, 38.868],
-        zoom: 11.45,
-        pitch: 72,
+        zoom: isMobileViewport() ? 11.2 : 11.6,
+        pitch: 61,
         bearing: 263,
         duration: 2200,
         essential: true
@@ -2015,8 +2332,8 @@
       document.getElementById("flight-hud").style.display = enable3D ? "flex" : "none";
 
       if (enable3D) {
-        map.setTerrain({ source: "terrain-dem", exaggeration: 1.42 });
-        map.easeTo({ pitch: 72, bearing: 263, duration: 1200 });
+        map.setTerrain({ source: "terrain-dem", exaggeration: 1.22 });
+        map.easeTo({ pitch: 61, bearing: 263, duration: 1200 });
       } else {
         if (map.setRoll) map.setRoll(0);
         map.setTerrain(null);
@@ -2089,13 +2406,14 @@
         `;
 
         card.addEventListener("mouseenter", () => {
-          if (!flightActive) showDropoffScreenshot(t, false);
+          if (!flightActive && !isMobileViewport()) showDropoffScreenshot(t, false);
         });
         card.addEventListener("mouseleave", () => {
-          if (!flightActive && pinnedSeq !== t.seq) scheduleHideDropoffScreenshot();
+          if (!flightActive && !isMobileViewport() && pinnedSeq !== t.seq) scheduleHideDropoffScreenshot();
         });
         card.addEventListener("click", () => {
           stopPlaneFlyover();
+          setMobileDrawer(false);
           focusSingleTrip(t.seq);
         });
 
@@ -2103,17 +2421,23 @@
       });
     }
 
-    // Boot Application Immediately (Zero Google Auth Modal Possible!)
     window.addEventListener("DOMContentLoaded", () => {
       initMap();
 
       document.getElementById("pill-3d").addEventListener("click", () => setMapDimensionMode(true));
       document.getElementById("pill-2d").addEventListener("click", () => setMapDimensionMode(false));
-      document.getElementById("btn-flyover").addEventListener("click", startPlaneFlyover);
+      document.getElementById("btn-flyover").addEventListener("click", () => startPlaneFlyover(null));
+      document.getElementById("btn-pause-flyover").addEventListener("click", togglePauseFlyover);
+      document.getElementById("btn-prev-trip").addEventListener("click", () => stepTrip(-1));
+      document.getElementById("btn-next-trip").addEventListener("click", () => stepTrip(1));
       document.getElementById("btn-pikes-orbit").addEventListener("click", flyToPikesPeakOverlook);
       document.getElementById("btn-clear-filter").addEventListener("click", flyToPikesPeakOverlook);
       document.getElementById("btn-pin-all-cards").addEventListener("click", () => toggleAllScreenshots());
       document.getElementById("btn-deadhead").addEventListener("click", toggleDeadhead);
+
+      document.getElementById("drawer-pull-bar").addEventListener("click", () => {
+        setMobileDrawer(!mobileDrawerOpen);
+      });
 
       document.getElementById("imagery-select").addEventListener("change", (e) => {
         const chosen = e.target.value;
